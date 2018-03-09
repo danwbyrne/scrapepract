@@ -1,4 +1,4 @@
-import urllib2
+from urllib import request
 from bs4 import BeautifulSoup
 import re
 import csv
@@ -103,7 +103,7 @@ def scrape(url):
 		writer.writeheader()
 
 
-		page = urllib2.urlopen(url)
+		page = request.urlopen(url)
 		soup = BeautifulSoup(page, 'html.parser')
 
 		paragraphs = soup.find_all('p')
