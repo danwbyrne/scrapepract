@@ -3,7 +3,12 @@ from bs4 import BeautifulSoup
 import re
 
 def parse_details(details):
-	pass
+	details.strip(' ')
+	split_ind = details.find(',')
+
+	org     = details[:split_ind].strip(' \,')
+	address = details[split_ind:].strip(' \,')
+	return (org, address)
 
 
 
@@ -23,7 +28,7 @@ def get_contact(info):
 
 def get_link(info):
 	pass
-	
+
 
 
 #we are converting from cleaned paragraph strings to lists here
@@ -50,7 +55,7 @@ def parse_paragraph(paragraph):
 
 
 
-	return [address, phone]
+	return [org, address, phone]
 
 
 	#return org, org_link, contact, phone, address
@@ -80,8 +85,13 @@ def scrape(url):
 
 
 def test():
-	scrape_page = 'http://www.carrollcountytimes.com/carrollliving/ph-cc-living-religion-20170622-story.html'
-	scrape(scrape_page)
+	info = ' 410-489-2999, 301-829-2403, <a href="mailto:Gerald.baker@worldnet.att.net">Gerald.baker@worldnet.att.net</a>'
+
 
 if __name__ == "__main__":
 	test()
+
+	#scrape_page = 'http://www.carrollcountytimes.com/carrollliving/ph-cc-living-religion-20170622-story.html'
+	#scrape(scrape_page)
+
+
