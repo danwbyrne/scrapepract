@@ -1,6 +1,7 @@
 import urllib2
 from bs4 import BeautifulSoup
 import re
+import csv
 
 def parse_details(details):
 	details.strip(' ')
@@ -95,17 +96,29 @@ def convert_paragraph(paragraph):
 	return parse_paragraph(line)
 
 def scrape(url):
-	page = urllib2.urlopen(url)
-	soup = BeautifulSoup(page, 'html.parser')
+	with open('exported_details.csv', 'w') as csvfile:
+		fieldnames = ['Organization', 'Organization Link', 'Contact', 'Phone', 'Address']
+		writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
 
-	paragraphs = soup.find_all('p')
+		writer.writeheader()
 
-	for i in range(len(paragraphs)): 
-		line    = convert_paragraph(paragraphs[i])
 
-		if i not in range(253,266) and i != 0:
-			if line != False:
-				print('%s:::%s\n' % (i, line))
+		page = urllib2.urlopen(url)
+		soup = BeautifulSoup(page, 'html.parser')
+
+		paragraphs = soup.find_all('p')
+
+		for i in range(len(paragraphs)): 
+			line    = convert_paragraph(paragraphs[i])
+
+			if i not in range(253,266) and i != 0:
+				if line != False:
+					writer.writerow({'Organization':line[0], 
+									 'Organization Link':line[1],
+									 'Contact':line[2],
+									 'Phone':line[3],
+									 'Address':line[4]})
+				
 
 
 def test():
@@ -117,5 +130,3 @@ if __name__ == "__main__":
 
 	scrape_page = 'http://www.carrollcountytimes.com/carrollliving/ph-cc-living-religion-20170622-story.html'
 	scrape(scrape_page)
-
-
