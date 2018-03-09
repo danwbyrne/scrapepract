@@ -6,14 +6,12 @@ def parse_details(details):
 	details.strip(' ')
 	split_ind = details.find(',')
 
-	org     = details[:split_ind].strip(' \,')
-	address = details[split_ind:].strip(' \,')
+	org     = details[:split_ind].strip(' \,\.')
+	address = details[split_ind:].strip(' \,\.')
 	return (org, address)
 
-
-
 def get_phone(info):
-	if info == None: return None
+
 	pattern = re.compile(".*?(\(?\d{3}\D{0,3}\d{3}\D{0,3}\d{4}).*?")
 	match   = re.match(pattern, info)
 
@@ -23,12 +21,47 @@ def get_phone(info):
 	except:
 		return None
 
-def get_contact(info):
-	pass
+def is_email(arg):
+	if arg == None:
+		return False
 
-def get_link(info):
-	pass
+	if arg.find('@') != -1:
+		return True
 
+	return False
+
+def parse_info(arg):
+	if arg == None: return None
+
+	start = arg.find('>')
+	end   = arg.find('<', start)
+
+	return arg[start+1:end]
+
+def get_info(info):
+	info_ind = info.find('<a')
+	link, contact = None, None
+
+	if info_ind == -1:
+		return None, None
+
+	split_info = info[info_ind:].split(',')
+
+	try:
+		arg1, arg2 = split_info[0], split_info[1]
+	except:
+		arg1, arg2 = split_info[0], None
+
+	arg1 = parse_info(arg1)
+	arg2 = parse_info(arg2)
+
+	if is_email(arg1):
+		link, contact = arg2, arg1
+
+	else:
+		link, contact = arg1, arg2
+
+	return (link, contact)
 
 
 #we are converting from cleaned paragraph strings to lists here
@@ -45,20 +78,11 @@ def parse_paragraph(paragraph):
 
 	org, address = parse_details(details)
 
-	org_link = get_link(info)
-	contact = get_contact(info)
-	phone = get_phone(info)
+	if info != None:
+		org_link, contact = get_info(info)
+		phone = get_phone(info)
 
-
-
-
-
-
-
-	return [org, address, phone]
-
-
-	#return org, org_link, contact, phone, address
+	return [org, org_link, contact, phone, address]
 
 #for cleaning this awful looking paragraphs
 def convert_paragraph(paragraph):
@@ -85,13 +109,13 @@ def scrape(url):
 
 
 def test():
-	info = ' 410-489-2999, 301-829-2403, <a href="mailto:Gerald.baker@worldnet.att.net">Gerald.baker@worldnet.att.net</a>'
-
+	info =  '443-764-5525, <a href="http://www.uproarchurch.org" target="_blank">www.uproarchurch.org</a>, <a href="mailto:uproarchurch1@gmail.com">uproarchurch1@gmail.com</a>'
+	print(get_info(info))
 
 if __name__ == "__main__":
-	test()
+	#test()
 
-	#scrape_page = 'http://www.carrollcountytimes.com/carrollliving/ph-cc-living-religion-20170622-story.html'
-	#scrape(scrape_page)
+	scrape_page = 'http://www.carrollcountytimes.com/carrollliving/ph-cc-living-religion-20170622-story.html'
+	scrape(scrape_page)
 
 
