@@ -1,15 +1,38 @@
 import urllib2
 from bs4 import BeautifulSoup
 
+
+#for cleaning this awful looking paragraphs
+def clean_paragraph(paragraph):
+	line = str(paragraph).strip('\n \<p>\</p>')
+	line = line.strip('.')
+
+	if line.find('Return to top') != -1:
+		return False
+
+	information_ind = line.find('Information:')
+
+
+
+
+
+
+
+	return line
+
+
 def scrape(url):
 	page = urllib2.urlopen(url)
-	parsed = BeautifulSoup(page, 'html.parser')
+	soup = BeautifulSoup(page, 'html.parser')
 
-	paragraphs = parsed.find_all('p')
+	paragraphs = soup.find_all('p')
 
 	for i in range(len(paragraphs)): 
-		line = str(paragraphs[i]).strip('\n \<p>\</p>')
-		print('%s    %s\n' % (i,line))
+		line    = clean_paragraph(paragraphs[i])
+
+		if i not in range(253,266) and i not in [0]:
+			if line != False:
+				print('%s    %s\n' % (i,line))
 
 
 
